@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+     xmlns:util="http://schemas.microsoft.com/wix/UtilExtension"
+     xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
+	<Product Id="*" Name="Active Directory Password Filter" Language="1033" Version="1.0.0.0" Manufacturer="Identicum S.A." UpgradeCode="948a073b-8f8e-4de4-8f8a-917f8af522f6">
+		<Package InstallerVersion="300" Compressed="yes" InstallScope="perMachine" Platform="x64" />
+
+		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+		<MediaTemplate EmbedCab="yes"/>
+
+    <!-- Checks for .NET Framework 4.5 -->
+    <PropertyRef Id="NETFRAMEWORK45"/>
+    <Condition Message="This application requires .NET Framework 4.5">Installed OR NETFRAMEWORK45</Condition>
+    
+    <Property Id="BASEURL" Value="http://localhost:8080/midpoint"/>
+    <Property Id="AUTHUSR" Value="administrator"/>
+    <Property Id="AUTHPWD" Value="5ecr3t"/>
+      
+    <UI>
+      <UIRef Id="WixUI_Minimal"/>
+      <!-- Disable repair and delete -->
+      <Property Id="ARPNOREPAIR" Value="yes" Secure="yes" />
+      <Property Id="ARPNOREMOVE" Value="yes" Secure="yes" />
+      <Dialog Id="ConfigurationDlg" Title="Configuration" Width="400" Height="300">        
+        <Control Id="BASEURLText" Type="Text" Width="200" Height="17" X="100" Y="20" TabSkip="no" Text="Base URL: "/>
+        <Control Id="BASEURLEdit" Type="Edit" Width="200" Height="17" X="100" Y="40" Property="BASEURL"/>
+        <Control Id="AUTHUSRText" Type="Text" Width="200" Height="17" X="100" Y="60" TabSkip="no" Text="Username: "/>
+        <Control Id="AUTHUSREdit" Type="Edit" Width="200" Height="17" X="100" Y="80" Property="AUTHUSR"/>
+        <Control Id="AUTHPWDText" Type="Text" Width="200" Height="17" X="100" Y="100" TabSkip="no" Text="Password: "/>
+        <Control Id="AUTHPWDEdit" Type="Edit" Width="200" Height="17" X="100" Y="120" Property="AUTHPWD"/>
+        <Control Id="cancelButton" Type="PushButton" Text="Cancel" Width="100" Height="17" X="100" Y="140" Cancel="yes">
+          <Publish Event="EndDialog" Value="Exit" />
+        </Control>
+        <Control Id="proceedButton" Type="PushButton" Text="Next" Width="100" Height="17" X="200" Y="140">
+          <Publish Event="EndDialog" Value="Return">1</Publish>
+        </Control>
+      </Dialog>
+      <InstallUISequence>
+        <Show Dialog="ConfigurationDlg" After="WelcomeEulaDlg"/>
+        <!--<Show Dialog="ProgessDlg" After="ConfigurationDlg"/>-->
+      </InstallUISequence>
+    </UI>
+
+    <!-- Define directory structure -->
+    <!-- Add files to installer package -->
+		<Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFiles64Folder">
+        <Directory Id="AdPasswordFilterDirectory" Name="ADPasswordFilter">
+          <Component Id="ADPasswordAgent.exe" Win64="yes" Guid="{064887fd-2405-441c-b90a-5efe4ed8e1d9}">
+            <File Id="ADPasswordAgent.exe" ProcessorArchitecture="x64" Name="$(var.ADPasswordAgent.TargetFileName)" Source="$(var.ADPasswordAgent.TargetPath)" KeyPath="yes" Checksum="yes"/>
+            <RemoveFile Id="RemoveADPasswordAgent.exe" Name="$(var.ADPasswordAgent.TargetFileName)" On="uninstall"/>
+          </Component>
+          <Component Id="ADPasswordAgent.exe.config" Win64="yes" Guid="{064887fd-2405-441c-b90a-5efe4ed8e1da}">
+            <File Id="ADPasswordAgent.exe.config" Name="$(var.ADPasswordAgent.TargetFileName).config" Source="$(var.ADPasswordAgent.TargetPath).config" KeyPath="yes" Checksum="yes"/>
+            <RemoveFile Id="RemoveADPasswordAgent.exe.config" Name="$(var.ADPasswordAgent.TargetFileName).config" On="uninstall"/>
+          </Component>
+        </Directory>
+        <Component Id="AgentRegistryEntry" Win64="yes" Guid="{064887fd-2405-441c-b90a-5efe4ed8e1fe}">
+          <RegistryKey Root="HKLM" Key="SOFTWARE\ADPasswordFilter" ForceDeleteOnUninstall="yes">
+            <RegistryValue Type="string" Name="Agent" Value="[ProgramFiles64Folder]ADPasswordFilter\$(var.ADPasswordAgent.TargetFileName)"/>
+          </RegistryKey>
+        </Component>
+        <Directory Id="AgentModifyConfiguration">
+          <Component Id="ModifyConfiguration" Guid="{064887fd-2405-441c-b90a-5efe4ed8e1fd}" KeyPath="yes">
+            <util:XmlFile Id="ModifyBASEURL" Action="setValue" ElementPath="/configuration/appSettings/add[\[]@key='BASEURL'[\]]" Name="value" File="[#$(var.ADPasswordAgent.TargetFileName).config]" Value="[BASEURL]"/>
+            <util:XmlFile Id="ModifyAUTHUSR" Action="setValue" ElementPath="/configuration/appSettings/add[\[]@key='AUTHUSR'[\]]" Name="value" File="[#$(var.ADPasswordAgent.TargetFileName).config]" Value="[AUTHUSR]"/>
+            <util:XmlFile Id="ModifyAUTHPWD" Action="setValue" ElementPath="/configuration/appSettings/add[\[]@key='AUTHPWD'[\]]" Name="value" File="[#$(var.ADPasswordAgent.TargetFileName).config]" Value="[AUTHPWD]"/>
+          </Component>
+        </Directory>
+      </Directory>
+			<Directory Id="System64Folder">
+        <Component Id="ADPasswordFilter.dll" Win64="yes" Guid="{064887fd-2405-441c-b90a-5efe4ed8e1db}" Permanent="yes">
+          <File Id="ADPasswordFilter.dll" ProcessorArchitecture="x64" Name="$(var.ADPasswordFilter.TargetFileName)" Source="$(var.ADPasswordFilter.TargetPath)" KeyPath="yes" Checksum="yes"/>
+        </Component>
+        <Component Id="FilterRegistryEntry" Win64="yes" Guid="{064887fd-2405-441c-b90a-5efe4ed8e1ff}" Permanent="yes">
+          <RegistryKey Root="HKLM" Key="SYSTEM\CurrentControlSet\Control\Lsa">
+            <RegistryValue Type="multiString" Name="Notification Packages" Value='$(var.ADPasswordFilter.TargetName)' Action="append"/>
+          </RegistryKey>
+        </Component>
+			</Directory>
+		</Directory>
+
+    <!-- Install the files -->
+		<Feature Id="ProductFeature" Title="Installer" Level="1">
+			<ComponentRef Id="ADPasswordAgent.exe"/>
+      <ComponentRef Id="ADPasswordAgent.exe.config"/>
+      <ComponentRef Id="AgentRegistryEntry"/>
+      <ComponentRef Id="ModifyConfiguration"/>
+      <ComponentRef Id="ADPasswordFilter.dll"/>
+      <ComponentRef Id="FilterRegistryEntry"/>
+		</Feature>
+  
+    <!-- Reboot prompt -->
+    <InstallExecuteSequence>
+      <ScheduleReboot After="InstallFinalize"/>
+    </InstallExecuteSequence>
+	</Product>
+</Wix>

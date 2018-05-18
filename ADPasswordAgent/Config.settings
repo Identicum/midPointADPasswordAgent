@@ -1,0 +1,15 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="ADPasswordAgent" GeneratedClassName="Config">
+  <Profiles />
+  <Settings>
+    <Setting Name="BASEURL" Type="(Web Service URL)" Scope="User">
+      <Value Profile="(Default)">http://localhost:8080/midpoint</Value>
+    </Setting>
+    <Setting Name="AUTHUSR" Type="System.String" Scope="User">
+      <Value Profile="(Default)">administrator</Value>
+    </Setting>
+    <Setting Name="AUTHPWD" Type="System.String" Scope="User">
+      <Value Profile="(Default)">5ecr3t</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
