@@ -23,7 +23,13 @@ namespace ADPasswordAgent
             }
             catch
             {
+                Console.WriteLine("Missing parameters in config file: {0}.config", argvs[0]);
+            }
+
+            if (argvs.Length != 3)
+            {
                 Console.WriteLine("Usage: {0} \"username\" \"password\"", argvs[0]);
+                return;
             }
 
             try
