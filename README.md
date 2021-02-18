@@ -34,7 +34,7 @@ SC START BackgroundAgentService
         ```
         REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\ADPasswordFilter" /v "Agent" /t REG_SZ /d "%ProgramFiles%\ADPasswordFilter\Agent.exe"
         ```
-    2. Manually append "ADPasswordFilter" to "Notification Packages" in "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa"
+    2. Using regedit append "ADPasswordFilter" to "Notification Packages" in "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa"
 
 - Restart the Domain Controller.
 
