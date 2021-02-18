@@ -20,16 +20,16 @@ dotnet publish -r win-x64 -p:PublishSingleFile=true -p:IncludeNativeLibrariesFor
 
 ## Installation
 
-- Copy ~ADPasswordFilter.dll~ into %WinDir%\System32\ADPasswordFilter.dll
-- Copy ~Agent.exe~ into %ProgramFiles%\ADPasswordFilter\Agent.exe
-- Adjust and copy ~config.json~ into %ProgramFiles%\ADPasswordFilter\config.json
-- Install and start the BackgroundAgentService running the following commands:
+- Copy _ADPasswordFilter.dll_ into _%WinDir%\System32\ADPasswordFilter.dll_
+- Copy _Agent.exe_ into _%ProgramFiles%\ADPasswordFilter\Agent.exe_
+- Adjust and copy _config.json_ into _%ProgramFiles%\ADPasswordFilter\config.json_
+- Install and start the _BackgroundAgentService_ running the following commands:
 ```
 SC CREATE BackgroundAgentService binpath="%ProgramFiles%\ADPasswordFilter\Agent.exe"
 SC CONFIG BackgroundAgentService start=auto
 SC START BackgroundAgentService
 ```
-- Install the ADPasswordFilter.dll:
+- Install _ADPasswordFilter.dll_:
     1. Run the following command:
         ```
         REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\ADPasswordFilter" /v "Agent" /t REG_SZ /d "%ProgramFiles%\ADPasswordFilter\Agent.exe"
