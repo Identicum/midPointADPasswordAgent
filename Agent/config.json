@@ -1,0 +1,9 @@
+{
+    "BaseURL": "http://localhost:8080/midpoint",
+    "Username": "administrator",
+    "Password": "5ecr3t",
+    "IgnoreCerts": true,
+    "SyncInterval": 5000,
+    "DatabaseFile": "%ProgramFiles%\\ADPasswordFilter\\database.sqlite",
+    "LogFile": "%ProgramFiles%\\ADPasswordFilter\\logs.log"
+}
